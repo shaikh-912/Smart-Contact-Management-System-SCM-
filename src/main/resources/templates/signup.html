@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{base :: parent(~{::#main}, ~{::title})}">
+<head>
+    <title>SignUp page</title>
+</head>
+
+<body>
+ <div id="main">
+        <div class="grid grid-cols-12"> 
+            <div class="col-span-4 "></div>
+            <div class="col-span-12 md:col-span-6 mb-2">
+                <div href="#" class="bg-neutral-primary-soft block max-w-sm  p-6 ml-11  border border-default rounded-base shadow-xs hover:bg-neutral-secondary-medium">
+                   <div data-th-replace="message::messagebox"></div>
+                    <h5 class="mb-3 text-gray-800 text-2xl font-semibold tracking-tight text-heading leading-8">SignUp Here.</h5>
+                    <p class="text-body text-gray-700">Managing contact on Cloud..</p> 
+                    <form data-th-action="@{'/do-signup'}" method="post" novalidate
+                    data-th-object="${userForm}">
+                        <!-- Name -->
+                        <label class="block mb-3">
+                            <span class="text-sm font-medium text-gray-700">Name</span>
+                            <input
+                            type="text"
+                            name="name"
+                            data-th-field="*{name}"
+                            required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Your full name"
+                            />
+                            <p
+                            data-th-if="${#fields.hasErrors('name')}" 
+                            data-th-errors="*{name}"
+                            class="text-red-500"></p>
+                        </label>
+                        <!-- Email -->
+                        <label class="block mb-3">
+                            <span class="text-sm font-medium text-gray-700">Email</span>
+                            <input
+                            type="email"
+                            name="email"
+                             data-th-field="*{email}"
+                            required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="you@example.com"
+                            />
+                             <p
+                            data-th-if="${#fields.hasErrors('email')}" 
+                            data-th-errors="*{email}"
+                            class="text-red-500"></p>
+                        </label>
+
+                        <!-- Password -->
+                        <label class="block mb-3">
+                            <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium text-gray-700">Password</span>
+                            </div>
+                            <input
+                            type="password"
+                            name="password"
+                             data-th-field="*{password}"
+                            required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="••••••••"
+                            />
+                             <p
+                            data-th-if="${#fields.hasErrors('password')}" 
+                            data-th-errors="*{password}"
+                            class="text-red-500"></p>
+                        </label>
+
+                        <!-- Phone -->
+                        <label class="block mb-3">
+                            <span class="text-sm font-medium text-gray-700">Phone</span>
+                            <input
+                            type="tel"
+                            name="phone"
+                             data-th-field="*{phoneNumber}"
+                            pattern="[0-9+()\-\s]{7,}"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="+91 98765 43210"
+                            />
+                             <p
+                            data-th-if="${#fields.hasErrors('phoneNumber')}" 
+                            data-th-errors="*{phoneNumber}"
+                            class="text-red-500"></p>
+                        </label>
+
+                        <!-- About -->
+                        <label class="block mb-4">
+                            <span class="text-sm font-medium text-gray-700">About</span>
+                            <textarea
+                            name="about"
+                             data-th-field="*{about}"
+                            rows="4"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Tell us a little about yourself..."
+                            ></textarea>
+                             <p
+                            data-th-if="${#fields.hasErrors('about')}" 
+                            data-th-errors="*{about}"
+                            class="text-red-500"></p>
+                        </label>
+
+                        <!-- Submit -->
+                        <button
+                            type="submit"
+                            class=" justify-center items-center gap-2 px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            Create account
+                        </button>
+                         <button
+                            type="reset"
+                            class=" justify-center items-center gap-2 px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                           Reset
+                        </button>
+                    </form> 
+                </div>
+              
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
