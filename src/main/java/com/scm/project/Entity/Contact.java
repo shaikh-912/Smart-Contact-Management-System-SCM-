@@ -40,6 +40,8 @@ public class Contact {
     private boolean favorite =false;
     private String webSiteLink;
     private String LinkedInLink;
+    
+    private String contactPublicId;
     // relation many to one 
     @ManyToOne
     private User user;
