@@ -89,11 +89,12 @@ public class ProjectController {
         //save user
         User saveUser=userService.saveUser(user);
         System.out.println("saved Successfull");
-        //success mes using session
 
-       Message message= Message.builder().content("Register SuccessFull..").type(MessageType.green).build();
+       Message message= Message.builder()
+               .content("Registration successful! Please log in with your new credentials.")
+               .type(MessageType.green).build();
         session.setAttribute("message", message);
-        return "redirect:/signup";
+        return "redirect:/login";
     }
 
 }

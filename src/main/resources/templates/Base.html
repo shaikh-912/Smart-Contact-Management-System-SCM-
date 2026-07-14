@@ -1,20 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" th:fragment="parent(content,title)" xmlns:th="http://www.thymeleaf.org"  >
+<html lang="en" th:fragment="parent(content,title,script)" xmlns:th="http://www.thymeleaf.org"  >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-th-replace="${title}"></title>
-     <link rel="stylesheet" data-th-href="@{'/css/output.css'}">
-     <link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.css" rel="stylesheet" />
-     <link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-     <link rel="stylesheet" data-th-href="@{'/css/style.css'}">
-
-</head>
-<body class="bg-gray-100">
-        <!-- header -->
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-   <!--  -- for user profile navbar-->
+    <link rel="stylesheet" data-th-href="@{'/css/output.css'}">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" data-th-href="@{'/css/style.css'}">
+</head>
+<body class="font-sans antialiased bg-stone-50 text-stone-900 selection:bg-stone-200">
+    <!-- header -->
+    
+    <!-- for user profile navbar-->
     <div th:if="${user}">
     	<div data-th-replace="~{user/user_navbar::user-navbar}"></div>
     </div>
@@ -23,15 +26,12 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     	<div data-th-replace="~{navbar :: nav}"></div>
     </div>
 
-
-
-    <div class="container">
-        <div  th:replace="${content}" >
-
-    </div>
+    <div class="w-full">
+        <div th:replace="${content}"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <th:block th:replace="${script}"></th:block>
 </body>
 </html>

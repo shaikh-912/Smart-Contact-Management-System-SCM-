@@ -1,11 +1,44 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{base :: parent(~{:: #main} , ~{:: title})}">
+<html lang="en" th:replace="~{base :: parent(~{:: #main} , ~{:: title},~{::script})}">
 <head>
-    <title>About page</title>
+    <title>About Us | SCM</title>
 </head>
 <body>
     <div id="main">
-        <h1>about page content</h1>
+        <section class="py-16 md:py-24 bg-stone-50">
+            <div class="max-w-4xl mx-auto px-6">
+                
+                <h1 class="text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight mb-6">About SCM</h1>
+                <p class="text-base sm:text-lg text-stone-500 font-medium leading-relaxed mb-10">
+                    Smart Contact Manager (SCM) was born out of a desire to create a clean, elegant, and distraction-free environment for organizing human connections. We believe managing your network shouldn't require complex dashboards or bloated tools.
+                </p>
+
+                <div class="space-y-12">
+                    <div class="border-l-2 border-stone-950 pl-6">
+                        <h2 class="text-lg font-bold text-stone-900 mb-2">Our Philosophy</h2>
+                        <p class="text-stone-500 text-sm leading-relaxed">
+                            We focus on high-fidelity features: fast loading, instant searching, intuitive categorization, and robust security. SCM keeps out the clutter so you can focus on building meaningful professional relations.
+                        </p>
+                    </div>
+
+                    <div class="border-l-2 border-stone-950 pl-6">
+                        <h2 class="text-lg font-bold text-stone-900 mb-2">Privacy & Security First</h2>
+                        <p class="text-stone-500 text-sm leading-relaxed">
+                            Your contacts belong solely to you. SCM utilizes advanced security configurations to isolate account databases, ensuring your network details remain private, safe, and shielded at all times.
+                        </p>
+                    </div>
+
+                    <div class="border-l-2 border-stone-950 pl-6">
+                        <h2 class="text-lg font-bold text-stone-900 mb-2">Cloud-Native Architecture</h2>
+                        <p class="text-stone-500 text-sm leading-relaxed">
+                            Built on top of Spring Boot 3, Hibernate Data Layers, and Cloudinary Content Networks, SCM provides rapid lookups and highly reliable storage infrastructure regardless of the device you are logging in from.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
     </div>
+    <th:block th:fragment="script"></th:block>
 </body>
 </html>

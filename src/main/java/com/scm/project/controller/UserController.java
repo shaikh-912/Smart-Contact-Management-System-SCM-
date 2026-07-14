@@ -1,18 +1,15 @@
 package com.scm.project.controller;
 
-import java.security.Principal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.scm.project.Entity.User;
 import com.scm.project.helper.Helper;
+import com.scm.project.repository.ContactRepo;
 import com.scm.project.services.userService;
 
 @Controller
@@ -22,43 +19,34 @@ public class UserController {
     @Autowired
     private userService userService;
 
-    //Loged in user information
-//    @ModelAttribute
-//    public void addLogedInUser(Model model,Authentication authentication) {
-//    	System.out.print("adding loged in user informateion ");
-//    	  String name=Helper.getEmailOfLoggedUser(authentication);
-//          System.out.println("user name is "+name);
-//          User user= userService.findByEmail(name);
-//          System.out.println(user.getName());
-//          System.out.println(user.getEmail());
-//          
-//          model.addAttribute("user",user);
-//    }
-//    
-    
-    //user Dashboard page
-    @PostMapping("/dashboard")
-    public String userDashboard(){
+    @Autowired
+    private ContactRepo contactRepo;
+
+    // ── Dashboard ────────────────────────────────────────────────────────────
+    @GetMapping("/dashboard")
+    public String userDashboard(Model model, Authentication authentication) {
+        String email = Helper.getEmailOfLoggedUser(authentication);
+        User user = userService.findByEmail(email);
+
+        // Live stats
+        long totalContacts   = contactRepo.countByUser(user);
+        long favoriteContacts = contactRepo.countByUserAndFavorite(user, true);
+
+        model.addAttribute("totalContacts",    totalContacts);
+        model.addAttribute("favoriteContacts", favoriteContacts);
+        // ${user} is already injected globally by ControllerRoot @ControllerAdvice
         return "user/dashboard";
     }
-    @GetMapping("/dashboard")
-public String userDashboard1() {
-    return "user/dashboard";
-}
 
+    // ── Profile ──────────────────────────────────────────────────────────────
     @RequestMapping("/profile")
-    public String userProfile(Model model, Authentication authentication){
-     
+    public String userProfile(Model model, Authentication authentication) {
+        String email = Helper.getEmailOfLoggedUser(authentication);
+        User user    = userService.findByEmail(email);
+
+        long totalContacts = contactRepo.countByUser(user);
+        model.addAttribute("totalContacts", totalContacts);
+        // ${user} injected globally
         return "user/profile";
     }
-
-    //user add contact page
-
-    //user view page
-
-    //user edit page
-
-    //user delete page
-
-    //user search page
 }

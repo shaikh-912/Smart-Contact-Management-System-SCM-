@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en"
-      th:replace="~{base :: parent(~{::#main}, ~{::title})}">
+      th:replace="~{base :: parent(~{::#main}, ~{::title},~{::script})}">
 <head>
     <title th:text="${user.name} + ' | SCM'"></title>
 </head>
 
-<body>
+<body class="bg-stone-50">
 
 <div id="main">
 
@@ -16,24 +16,102 @@
     <div th:replace="~{user/user_navbar::user-navbar}"></div>
 
     <!-- Main Content -->
-    <main class="p-4 sm:ml-64 mt-16">
+    <main class="p-6 sm:ml-64 mt-16 min-h-screen bg-stone-50">
 
-        <div class="p-6 border rounded-lg bg-white shadow">
-
-            <h1 class="text-3xl font-bold">
-                Welcome,
-                <span th:text="${user.name}"></span>
+        <!-- Welcome Banner -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-stone-900 tracking-tight">
+                Welcome back, <span class="text-stone-600 font-medium" th:text="${user.name}">User</span>
             </h1>
+            <p class="mt-1 text-sm text-stone-500 font-medium">Here is a quick status overview of your connections repository.</p>
+        </div>
 
-            <p class="mt-3 text-gray-600">
-                Dashboard page content goes here.
-            </p>
+        <!-- Dashboard Stats Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            
+            <!-- Card 1: Contacts count -->
+            <div class="p-6 bg-white border border-stone-200/80 rounded-2xl shadow-sm hover:border-stone-400 hover:shadow-md transition-all duration-300 flex items-start justify-between group">
+                <div>
+                    <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Total Contacts</span>
+                    <h3 class="text-3xl font-bold text-stone-900 mt-2" th:text="${totalContacts}">0</h3>
+                    <p class="text-xs font-semibold text-stone-500 mt-3 group-hover:text-stone-900 transition-colors">
+                        <a th:href="@{/user/contacts}" class="inline-flex items-center gap-1">
+                            Browse contact list <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </a>
+                    </p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-stone-50 flex items-center justify-center border border-stone-100">
+                    <i class="fa-regular fa-address-book text-stone-700 text-lg"></i>
+                </div>
+            </div>
 
+            <!-- Card 2: Favorites count -->
+            <div class="p-6 bg-white border border-stone-200/80 rounded-2xl shadow-sm hover:border-stone-400 hover:shadow-md transition-all duration-300 flex items-start justify-between group">
+                <div>
+                    <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Starred Contacts</span>
+                    <h3 class="text-3xl font-bold text-stone-900 mt-2" th:text="${favoriteContacts}">0</h3>
+                    <p class="text-xs font-semibold text-stone-500 mt-3 group-hover:text-stone-900 transition-colors">
+                        <a th:href="@{/user/contacts(sort='favorite',direction='desc')}" class="inline-flex items-center gap-1">
+                            View favorites <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </a>
+                    </p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-100">
+                    <i class="fa-regular fa-star text-base font-bold"></i>
+                </div>
+            </div>
+
+            <!-- Card 3: Cloud Vault -->
+            <div class="p-6 bg-white border border-stone-200/80 rounded-2xl shadow-sm hover:border-stone-400 hover:shadow-md transition-all duration-300 flex items-start justify-between">
+                <div>
+                    <span class="text-xs font-bold text-stone-400 uppercase tracking-wider">Storage Sync</span>
+                    <h3 class="text-3xl font-bold text-stone-900 mt-2">Active</h3>
+                    <p class="text-xs font-semibold text-stone-500 mt-3 inline-flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-ping"></span> Cloudinary Enabled
+                    </p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-stone-50 text-stone-700 flex items-center justify-center border border-stone-100">
+                    <i class="fa-solid fa-cloud-arrow-up text-base"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Quick Actions Panel -->
+        <div class="p-6 bg-white border border-stone-200/80 rounded-2xl shadow-sm">
+            <h3 class="text-lg font-bold text-stone-900 tracking-tight mb-4">Quick Actions</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                
+                <a th:href="@{/user/contacts/add}" 
+                   class="flex items-center gap-3 p-4 border border-stone-200 hover:border-stone-950 rounded-xl transition-all font-semibold text-sm text-stone-700 hover:text-stone-950 group">
+                    <div class="shrink-0 w-8 h-8 rounded-lg bg-stone-50 flex items-center justify-center text-stone-500 group-hover:bg-stone-950 group-hover:text-white transition-colors">
+                        <i class="fa-solid fa-user-plus text-xs"></i>
+                    </div>
+                    Create new entry
+                </a>
+
+                <a th:href="@{/user/contacts}" 
+                   class="flex items-center gap-3 p-4 border border-stone-200 hover:border-stone-950 rounded-xl transition-all font-semibold text-sm text-stone-700 hover:text-stone-950 group">
+                    <div class="shrink-0 w-8 h-8 rounded-lg bg-stone-50 flex items-center justify-center text-stone-500 group-hover:bg-stone-950 group-hover:text-white transition-colors">
+                        <i class="fa-regular fa-address-book text-xs"></i>
+                    </div>
+                    Manage phone book
+                </a>
+
+                <a th:href="@{/user/profile}" 
+                   class="flex items-center gap-3 p-4 border border-stone-200 hover:border-stone-950 rounded-xl transition-all font-semibold text-sm text-stone-700 hover:text-stone-950 group">
+                    <div class="shrink-0 w-8 h-8 rounded-lg bg-stone-50 flex items-center justify-center text-stone-500 group-hover:bg-stone-950 group-hover:text-white transition-colors">
+                        <i class="fa-regular fa-id-card text-xs"></i>
+                    </div>
+                    Update profile info
+                </a>
+
+            </div>
         </div>
 
     </main>
 
 </div>
-
+<th:block th:fragment="script"></th:block>
 </body>
 </html>

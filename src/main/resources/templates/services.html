@@ -1,11 +1,61 @@
 <!DOCTYPE html>
-<html lang="en" th:replace="~{base :: parent(~{:: #main} , ~{::title})}">
+<html lang="en" th:replace="~{base :: parent(~{:: #main} , ~{::title},~{::script})}">
 <head>
-    <title>Service page</title>
+    <title>Services | SCM</title>
 </head>
 <body>
     <div id="main">
-        <h1>Service content</h1>
+        <section class="py-16 md:py-24 bg-stone-50">
+            <div class="max-w-5xl mx-auto px-6">
+                
+                <div class="text-center mb-16">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-stone-900 tracking-tight">Our Core Services</h1>
+                    <p class="mt-4 text-stone-500 font-medium max-w-lg mx-auto">Explore features designed to make contact organization seamless and secure.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <!-- Service 1 -->
+                    <div class="p-8 border border-stone-200 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-10 h-10 bg-stone-950 text-white rounded-lg flex items-center justify-center mb-6 font-semibold">01</div>
+                        <h2 class="text-xl font-bold text-stone-900 mb-3">Structured Network Organization</h2>
+                        <p class="text-stone-500 text-sm leading-relaxed">
+                            Log profile names, email endpoints, phone listings, physical addresses, websites, and LinkedIn profiles. Keep all connection coordinates mapped cleanly in a single location.
+                        </p>
+                    </div>
+
+                    <!-- Service 2 -->
+                    <div class="p-8 border border-stone-200 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-10 h-10 bg-stone-950 text-white rounded-lg flex items-center justify-center mb-6 font-semibold">02</div>
+                        <h2 class="text-xl font-bold text-stone-900 mb-3">Asset Upload & Cloud Hosting</h2>
+                        <p class="text-stone-500 text-sm leading-relaxed">
+                            Attach high-resolution photos and profile cards. Backed by Cloudinary API CDNs, images compile and crop dynamically to fit standard user widgets without requiring manual conversion.
+                        </p>
+                    </div>
+
+                    <!-- Service 3 -->
+                    <div class="p-8 border border-stone-200 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-10 h-10 bg-stone-950 text-white rounded-lg flex items-center justify-center mb-6 font-semibold">03</div>
+                        <h2 class="text-xl font-bold text-stone-900 mb-3">Instant Search Indexes</h2>
+                        <p class="text-stone-500 text-sm leading-relaxed">
+                            Search your directory in real time. We index name properties, mobile attributes, and emails using Spring Data JPA. Find contacts in fractions of a second.
+                        </p>
+                    </div>
+
+                    <!-- Service 4 -->
+                    <div class="p-8 border border-stone-200 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="w-10 h-10 bg-stone-950 text-white rounded-lg flex items-center justify-center mb-6 font-semibold">04</div>
+                        <h2 class="text-xl font-bold text-stone-900 mb-3">Universal OAuth Support</h2>
+                        <p class="text-stone-500 text-sm leading-relaxed">
+                            Log in and view your panel instantly using standard credentials or authenticate effortlessly with secure third-party configurations like Google OAuth.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
     </div>
+    <th:block th:fragment="script"></th:block>
 </body>
 </html>

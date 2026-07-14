@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.hibernate.annotations.ManyToAny;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,6 +46,7 @@ public class Contact {
     private String contactPublicId;
     // relation many to one 
     @ManyToOne
+    @JsonIgnore
     private User user;
     //link connect one to many e.g one contact have multipel links;
     @OneToMany(mappedBy = "contact", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

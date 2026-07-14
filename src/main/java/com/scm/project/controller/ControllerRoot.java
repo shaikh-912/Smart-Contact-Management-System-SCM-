@@ -10,21 +10,29 @@ import com.scm.project.Entity.User;
 import com.scm.project.helper.Helper;
 import com.scm.project.services.userService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @ControllerAdvice
 public class ControllerRoot {
 
 	@Autowired
 	private userService userService;
-	//Loged in user information
-    @ModelAttribute
-    public void addLogedInUser(Model model,Authentication authentication) {
-    	if(authentication==null) {
-    		return;
-    	}
-    	System.out.print("adding loged in user informateion ");
-    	  String name=Helper.getEmailOfLoggedUser(authentication);
-          System.out.println("user name is "+name);
-          User user= userService.findByEmail(name);          
-          model.addAttribute("user",user);
-    }
+
+	// Loged in user information
+	@ModelAttribute
+	public void addLogedInUser(Model model, Authentication authentication) {
+		if (authentication == null) {
+			return;
+		}
+		System.out.print("adding loged in user informateion ");
+		String name = Helper.getEmailOfLoggedUser(authentication);
+		System.out.println("user name is " + name);
+		User user = userService.findByEmail(name);
+		model.addAttribute("user", user);
+	}
+
+	@ModelAttribute("currentPath")
+	public String currentPath(HttpServletRequest request) {
+		return request.getRequestURI();
+	}
 }

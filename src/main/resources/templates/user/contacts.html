@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en"
+      th:replace="~{base :: parent(~{::#main}, ~{::title},~{::script})}">
+<head>
+    <title>Contact Book | SCM</title>
+</head>
+
+<body class="bg-stone-50">
+
+<div id="main">
+
+    <!-- Sidebar -->
+    <div th:replace="~{user/sidebar::sidebar}"></div>
+
+    <!-- Navbar -->
+    <div th:replace="~{user/user_navbar::user-navbar}"></div>
+
+    <!-- Main Content -->
+    <form action="get" th:action="@{'/user/contacts/search'}">
+    
+        <main class="p-6 sm:ml-64 mt-16 bg-stone-50 min-h-screen">
+
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-3xl font-bold text-stone-900 tracking-tight">Contact Book</h1>
+                    <p class="mt-1 text-sm text-stone-500 font-medium">Browse, search, and manage your directory connections</p>
+                </div>
+                <div th:replace="~{message :: messagebox}"></div>
+                <a th:href="@{/user/contacts/add}" 
+                   class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-stone-950 hover:bg-stone-800 text-white font-semibold rounded-xl text-xs sm:text-sm transition-all shadow-sm">
+                    <i class="fa-solid fa-plus text-[10px]"></i> Add Contact
+                </a>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden">
+
+                <!-- Top Search & Filter Bar -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-5 sm:p-6 border-b border-stone-100">
+
+                    <!-- Field Dropdown Selection -->
+                    <select name="field"
+                            class="w-full md:w-48 border border-stone-200 rounded-xl px-4 py-2.5 text-stone-700 text-sm focus:border-stone-950 focus:ring-0 transition-colors">
+                        <option selected value="name">Search Name</option>
+                        <option value="phone">Phone Number</option>
+                        <option value="email">Email Address</option>
+                    </select>
+
+                    <!-- Search Input & Button -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+                        <div class="relative w-full sm:w-72">
+                            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"></i>
+                            <input name="keyword" type="text" placeholder="Search contacts..."
+                                   class="pl-11 pr-4 py-2.5 w-full border border-stone-200 rounded-xl text-sm focus:border-stone-950 focus:ring-0 transition-colors minimal-input">
+                        </div>
+                        <button type="submit"
+                                class="w-full sm:w-auto px-5 py-2.5 bg-stone-950 text-white font-semibold rounded-xl text-sm hover:bg-stone-800 transition shadow-sm">
+                            Search
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Table Container -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm min-w-[720px] text-left">
+                        <thead class="bg-stone-50 uppercase text-[10px] font-bold tracking-wider text-stone-500 border-b border-stone-150">
+                            <tr>
+                                <th class="px-6 py-4">Name</th>
+                                <th class="px-6 py-4">Phone Number</th>
+                                <th class="px-6 py-4">Social Links</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-100">
+                            <!-- Loop Contact Rows -->
+                            <tr th:object="${c}" data-th-each="c: ${pageContacts.getContent()}" class="hover:bg-stone-50/40 transition-colors">
+                                
+                                <!-- Contact Name & Picture -->
+                                <td class="px-6 py-4 sm:py-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full border border-stone-150 overflow-hidden bg-stone-50 shrink-0">
+                                            <img onerror="this.src='https://as1.ftcdn.net/jpg/07/24/59/76/1000_F_724597608_pmo5BsVumFcFyHJKlASG2Y2KpkkfiYUU.webp'"
+                                                 th:src="@{*{picture}}" alt="Contact Avatar"
+                                                 class="w-full h-full object-cover">
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h3 class="font-semibold text-stone-900 truncate" th:text="*{name}">Name</h3>
+                                            <p class="text-stone-400 text-xs truncate" th:text="*{email}">email@example.com</p>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Phone Number -->
+                                <td class="px-6 py-4 sm:py-5 text-stone-600 font-medium whitespace-nowrap" th:text="*{phoneNumber}">
+                                    +91 9876543210
+                                </td>
+
+                                <!-- External Profiles -->
+                                <td class="px-6 py-4 sm:py-5">
+                                    <div class="flex items-center gap-4 text-xs font-semibold">
+                                        <a th:if="*{webSiteLink != null && webSiteLink != ''}" th:href="@{*{webSiteLink}}" target="_blank"
+                                           class="inline-flex items-center gap-1 text-stone-500 hover:text-stone-950 transition-colors">
+                                            <i class="fa-solid fa-globe text-stone-400"></i> Web
+                                        </a>
+                                        <a th:if="*{LinkedInLink != null && LinkedInLink != ''}" th:href="@{*{LinkedInLink}}" target="_blank"
+                                           class="inline-flex items-center gap-1 text-stone-500 hover:text-stone-950 transition-colors">
+                                            <i class="fa-brands fa-linkedin text-stone-400"></i> LinkedIn
+                                        </a>
+                                        <span th:if="*{(webSiteLink == null || webSiteLink == '') && (LinkedInLink == null || LinkedInLink == '')}" 
+                                              class="text-stone-300 font-normal italic">None</span>
+                                    </div>
+                                </td>
+
+                                <!-- Favorite Badge Status -->
+                                <td class="px-6 py-4 sm:py-5">
+                                    <span th:if="*{favorite}" 
+                                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100">
+                                        <i class="fa-solid fa-star text-[10px]"></i> Starred
+                                    </span>
+                                    <span th:unless="*{favorite}" 
+                                          class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-stone-50 text-stone-400 border border-stone-150">
+                                        Normal
+                                    </span>
+                                </td>
+
+                                <!-- Actions Operations -->
+                                <td class="px-6 py-4 sm:py-5">
+                                    <div class="flex items-center justify-center gap-3.5 text-stone-500">
+                                        
+                                        <!-- View Modal Details -->
+                                        <button type="button"
+                                                th:data-name="*{name}"
+                                                th:data-email="*{email}"
+                                                th:data-phone="*{phoneNumber}"
+                                                th:data-picture="*{picture}"
+                                                th:data-website="*{webSiteLink}"
+                                                th:data-linkedin="*{LinkedInLink}"
+                                                th:data-favorite="*{favorite}"
+                                                onclick="openContactModal(this)"
+                                                class="hover:text-stone-900 p-1 transition-colors"
+                                                title="View Details">
+                                            <i class="fa-solid fa-eye text-sm"></i>
+                                        </button>
+
+                                        <!-- Edit Contact -->
+                                        <a th:href="@{'/user/contacts/update/' + ${c.id}}"
+                                           class="hover:text-stone-900 p-1 transition-colors" title="Edit Contact">
+                                            <i class="fa-solid fa-pen text-sm"></i>
+                                        </a>
+
+                                        <!-- Delete Contact (Mock link mapping) -->
+                                        <a th:onclick="deleteContact([[${c.id}]])" class="hover:text-stone-900 p-1 transition-colors" title="Delete Contact">
+                                            <i class="fa-solid fa-trash text-sm"></i>
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <!-- Empty Search / Database State -->
+                            <tr th:if="${pageContacts.isEmpty()}">
+                                <td colspan="5" class="text-center py-16 text-stone-400 font-medium">
+                                    <div class="max-w-xs mx-auto">
+                                        <i class="fa-regular fa-folder-open text-3xl text-stone-300 mb-4 block"></i>
+                                        <p class="text-sm">No contacts stored in this category yet.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Component -->
+                <nav th:if="${!pageContacts.isEmpty()}" class="flex items-center justify-between border-t border-stone-100 px-6 py-4 bg-white" aria-label="Table navigation">
+                    <div class="text-xs font-semibold text-stone-500">
+                        Page <span th:text="${pageContacts.number + 1}">1</span> of <span th:text="${pageContacts.totalPages}">1</span>
+                    </div>
+                    <ul class="inline-flex items-center gap-1.5 text-sm">
+
+                        <!-- Prev Button -->
+                        <li data-th-unless="${pageContacts.first}">
+                            <a th:href="@{'contacts?size='+${pageSize}+'&page='+${pageContacts.getNumber()-1}}"
+                               class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 hover:text-stone-950 transition-colors">
+                                <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                            </a>
+                        </li>
+
+                        <!-- Pages Indicators Loop -->
+                        <li data-th-each="i : ${#numbers.sequence(0,pageContacts.getTotalPages()-1)}">
+                            <a th:href="@{'contacts?size='+${pageSize}+'&page='+${i}}"
+                               th:class="${i==pageContacts.number}
+                                    ? 'inline-flex items-center justify-center w-8 h-8 rounded-lg bg-stone-950 text-white font-semibold'
+                                    : 'inline-flex items-center justify-center w-8 h-8 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 hover:text-stone-950 transition-colors'"
+                               th:text="${i + 1}">
+                                1
+                            </a>
+                        </li>
+
+                        <!-- Next Button -->
+                        <li th:unless="${pageContacts.last}">
+                            <a th:href="@{'contacts?size='+${pageSize}+'&page='+${pageContacts.getNumber()+1}}"
+                               class="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-stone-200 hover:bg-stone-50 text-stone-600 hover:text-stone-950 transition-colors">
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+
+            </div>
+
+        </main>
+    </form>
+    
+    <!-- Contact Detail Modal Box -->
+    <div th:replace="~{user/contact_modal :: contactModal}"></div>
+
+</div>
+
+<script th:src="@{/JS/contact.js}"></script>
+</body>
+</html>

@@ -26,6 +26,9 @@ public class imageImpl implements imageService {
 	public String uploadImage(MultipartFile contactImage,String filename) {
 		
 		try {
+			if(contactImage==null || contactImage.isEmpty()) {
+				return null;
+			}
 			byte[] data=new byte[contactImage.getInputStream().available()];
 			contactImage.getInputStream().read(data);
 			cloudinary.uploader().upload(data,ObjectUtils.asMap(
