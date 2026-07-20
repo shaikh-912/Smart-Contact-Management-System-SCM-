@@ -7,6 +7,7 @@ A full-stack, enterprise-grade Spring Boot application designed to help users se
 ## 🚀 Key Features
 
 * **Dual Authentication Mechanisms**: Secure login utilizing either standard email/password (backed by BCrypt hashing) or Google OAuth2 social login.
+* **Email Verification & Account Activation**: Automatically dispatches email verification links to verify users and activate accounts after registration.
 * **Granular Contact Management**: Create, view, search, and manage user-specific contact lists.
 * **Advanced Pagination & Sorting**: High-performance paginated listings for contacts to support large data sets efficiently.
 * **Multi-Criteria Search**: Dynamic search capabilities allowing filtering of contacts by name, email, or phone number with pagination support.
@@ -23,6 +24,7 @@ A full-stack, enterprise-grade Spring Boot application designed to help users se
 | **Security Framework** | Spring Security, OAuth2 Client |
 | **Database & Persistence** | MySQL, Spring Data JPA, Hibernate |
 | **Asset Storage** | Cloudinary API |
+| **Mail Services** | Spring Boot Starter Mail, SMTP |
 | **Template Engine** | Thymeleaf |
 | **Frontend Styles** | TailwindCSS, Flowbite UI, CSS3 |
 | **Frontend Logic** | Vanilla Javascript |
@@ -65,6 +67,7 @@ d:/SpringProject/project/
     │   │   ├── controller/           # Web controllers and global advice mapping
     │   │   │   ├── ApiController.java
     │   │   │   ├── ControllerRoot.java
+    │   │   │   ├── EmailAuthController.java # Email verification token processing
     │   │   │   ├── ProjectController.java
     │   │   │   ├── UserController.java
     │   │   │   └── contactController.java
@@ -82,15 +85,18 @@ d:/SpringProject/project/
     │   │   │   ├── Message.java
     │   │   │   ├── MessageType.java
     │   │   │   ├── ResourceNotFound.java
-    │   │   │   └── SessionHelper.java
+    │   │   │   ├── SessionHelper.java
+    │   │   │   └── UserEnabledException.java # Custom login failure handler for disabled users
     │   │   └── services/             # Service contracts and concrete implementations
     │   │       ├── contactService.java
     │   │       ├── imageService.java
+    │   │       ├── MailService.java      # Interface for sending automated verification emails
     │   │       ├── userService.java
     │   │       └── serviceImplement/
     │   │           ├── SecurityCustomUserDetailService.java
     │   │           ├── contactImpl.java
     │   │           ├── imageImpl.java
+    │   │           ├── MailServiceImpl.java  # JavaMailSender implementation of MailService
     │   │           └── userImpl.java
     │   └── resources/
     │       ├── application.properties # Main application properties configuration
@@ -128,17 +134,19 @@ d:/SpringProject/project/
 ## 📦 Architecture Details & Modules
 
 ### 1. Security & Authentication Layer
-* **Spring Security Config**: [SecurityConfig.java](src/main/java/com/scm/project/config/SecurityConfig.java) defines custom route authorization. Paths matching `/user/**` are private and require authorization. All other routes are public.
-* **Form Authentication**: Utilizes standard database lookups. Email is set as the username parameter, and passwords are authenticated via [SecurityCustomUserDetailService.java](src/main/java/com/scm/project/services/serviceImplement/SecurityCustomUserDetailService.java) utilizing BCrypt matching.
+* **Spring Security Config**: [SecurityConfig.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/config/SecurityConfig.java) defines custom route authorization. Paths matching `/user/**` are private and require authorization. All other routes are public.
+* **Form Authentication**: Utilizes standard database lookups. Email is set as the username parameter, and passwords are authenticated via [SecurityCustomUserDetailService.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/services/serviceImplement/SecurityCustomUserDetailService.java) utilizing BCrypt matching.
 * **Social OAuth2 Logins**: Google integration is configured. Upon successful authentication, a custom success handler reads attributes (email, name, picture), registers the user locally under `Provider.GOOGLE` if they are new, and redirects them to the private dashboard.
+* **Account Verification Flow**: New accounts are created as disabled. A custom failure handler [UserEnabledException.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/helper/UserEnabledException.java) redirects disabled users attempting to log in with an explanatory message. When the user visits the link in their mail, [EmailAuthController.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/controller/EmailAuthController.java) verifies the UUID email token and enables the user.
 
 ### 2. JPA Database & Entity Model
-* **User**: [User.java](src/main/java/com/scm/project/Entity/User.java) implements `UserDetails`, storing system roles (`ROLE_USER`) and user credentials. It maintains a `@OneToMany` cascade relationship to contacts.
-* **Contact**: [Contact.java](src/main/java/com/scm/project/Entity/Contact.java) defines properties for individual contacts, including name, email, address, phone number, picture URL, and favorite status. Holds a unique `contactPublicId` representing the Cloudinary asset identifier.
-* **Repository Queries**: [ContactRepo.java](src/main/java/com/scm/project/repository/ContactRepo.java) leverages Spring Data JPA finder methods for pagination. It utilizes standard keyword matches and a custom JPQL query for comprehensive searches.
+* **User**: [User.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/Entity/User.java) implements `UserDetails`, storing system roles (`ROLE_USER`) and user credentials. It tracks account state (`enable`, `emailVarified`) and contains `emailToken` mapping properties.
+* **Contact**: [Contact.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/Entity/Contact.java) defines properties for individual contacts, including name, email, address, phone number, picture URL, and favorite status. Holds a unique `contactPublicId` representing the Cloudinary asset identifier.
+* **Repository Queries**: [ContactRepo.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/repository/ContactRepo.java) leverages Spring Data JPA finder methods for pagination. It utilizes standard keyword matches and a custom JPQL query for comprehensive searches.
 
 ### 3. Business Service Layer
-* **User Management**: [userImpl.java](src/main/java/com/scm/project/services/serviceImplement/userImpl.java) creates and saves accounts, encrypting raw passwords via standard Spring autowired decoders.
+* **User Management**: [userImpl.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/services/serviceImplement/userImpl.java) creates and saves accounts, encrypting raw passwords via standard Spring autowired decoders. It also generates a verification token, triggers mail sending, and saves users as disabled by default.
+* **Mail Service**: [MailServiceImpl.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/services/serviceImplement/MailServiceImpl.java) uses `SimpleMailMessage` and standard Java Mail dependencies to send registration verification links.
 * **Contact Operations**: [contactImpl.java](src/main/java/com/scm/project/services/serviceImplement/contactImpl.java) executes CRUD actions, formatting search outputs, mapping parameters, and handling paginated queries.
 * **Cloudinary Image Hosting**: [imageImpl.java](src/main/java/com/scm/project/services/serviceImplement/imageImpl.java) reads Multipart files, pushes binary arrays to Cloudinary API repositories, and requests server-side cropping (`fill` style) to enforce consistent user profiles.
 
@@ -182,6 +190,14 @@ spring.security.oauth2.client.registration.google.client-secret=YOUR_GOOGLE_CLIE
 cloudinary.cloud.name=YOUR_CLOUDINARY_CLOUD_NAME
 cloudinary.api.key=YOUR_CLOUDINARY_API_KEY
 cloudinary.api.secret=YOUR_CLOUDINARY_API_SECRET
+
+# Spring Mail (SMTP) setup
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=YOUR_EMAIL_USERNAME
+spring.mail.password=YOUR_EMAIL_APP_PASSWORD
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
 ```
 
 ### 🖥️ Run the Application

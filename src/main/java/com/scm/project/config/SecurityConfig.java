@@ -28,6 +28,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 
 import com.scm.project.Entity.Provider;
 import com.scm.project.helper.AppConstants;
+import com.scm.project.helper.UserEnabledException;
 import com.scm.project.repository.UserRepo;
 import com.scm.project.services.serviceImplement.SecurityCustomUserDetailService;
 
@@ -52,6 +53,9 @@ public class SecurityConfig {
 
     @Autowired
     private UserRepo userRepo;
+    
+    @Autowired
+    private  UserEnabledException userEnabledException;
 
     @SuppressWarnings("deprecation")
     @Bean
@@ -82,6 +86,7 @@ public class SecurityConfig {
             formlogin.failureUrl("/login?error=true");
             formlogin.usernameParameter("email");
             formlogin.passwordParameter("password");
+            formlogin.failureHandler(userEnabledException);
         });
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);

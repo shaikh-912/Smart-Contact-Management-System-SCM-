@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 
 import com.scm.project.Entity.User;
 import com.scm.project.helper.AppConstants;
+import com.scm.project.helper.Helper;
 import com.scm.project.helper.ResourceNotFound;
 import com.scm.project.repository.UserRepo;
+import com.scm.project.services.MailService;
 import com.scm.project.services.userService;
 
 @Service
@@ -26,6 +28,9 @@ public class userImpl implements userService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private MailService mailService;
      
     @Override
     public User saveUser(User user) {
@@ -34,7 +39,14 @@ public class userImpl implements userService {
         user.setId(uId);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoleList(List.of(AppConstants.ROLE_USER));
-       return userRepo.save(user);
+        
+        
+        String emailToken=UUID.randomUUID().toString();
+        user.setEmailToken(emailToken);
+        User saveUser=userRepo.save(user);
+        String emailLink=Helper.getEmailVerificationLink(emailToken);
+        mailService.sendMail(saveUser.getEmail(), "Verify Email : SCM Contact Manager.", emailLink);
+       return saveUser;
     }
 
     @Override

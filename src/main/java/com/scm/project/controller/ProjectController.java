@@ -85,13 +85,13 @@ public class ProjectController {
         user.setPhoneNumber(userFrom.getPhoneNumber());
         user.setAbout(userFrom.getAbout());
         user.setProfilePic("https://www.shutterstock.com/shutterstock/photos/2558760599/display_1500/stock-vector-user-profile-icon-vector-avatar-or-person-icon-profile-picture-portrait-symbol-default-avatar-2558760599.jpg");
-
+        user.setEnable(false);
         //save user
         User saveUser=userService.saveUser(user);
         System.out.println("saved Successfull");
 
        Message message= Message.builder()
-               .content("Registration successful! Please log in with your new credentials.")
+               .content("Registration successful! Email verification link has been sent to your email, please check.")
                .type(MessageType.green).build();
         session.setAttribute("message", message);
         return "redirect:/login";

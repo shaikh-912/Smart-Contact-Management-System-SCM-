@@ -51,10 +51,13 @@ public class User implements UserDetails {
     @Column(length = 10000)
     private String profilePic;
     private String phoneNumber;
+    
+    @Column
+    private String emailToken;
     //information
 
     @Getter(AccessLevel.NONE)
-    private boolean enable=true;
+    private boolean enable=false;
     private boolean emailVarified=false;
     private boolean phoneVarified=false;
 
@@ -99,7 +102,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enable;
     }
 
     @Override
