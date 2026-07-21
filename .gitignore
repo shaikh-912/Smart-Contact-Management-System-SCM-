@@ -31,10 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
-### Secrets ###
-src/main/resources/application.properties
+
+### Secrets and Environment Files ###
+.env
+.env.local
+.env.*.local
 
 node_modules/
-target/
-src/main/resources/application.properties
 /.apt_generated_tests/
