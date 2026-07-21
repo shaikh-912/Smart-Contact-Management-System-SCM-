@@ -28,8 +28,15 @@ public class Helper {
                 return authentication.getName();
             }
     }
-    public static String getEmailVerificationLink(String emailToken) {
-    	String link="http://localhost:8081/auth/verify-email?token="+emailToken;
+    public static String getEmailVerificationLink(String emailToken, String baseUrl) {
+    	if (baseUrl == null || baseUrl.isBlank()) {
+    		baseUrl = "http://localhost:8081";
+    	}
+    	String link = baseUrl + "/auth/verify-email?token=" + emailToken;
     	return link;
+    }
+
+    public static String getEmailVerificationLink(String emailToken) {
+    	return getEmailVerificationLink(emailToken, "http://localhost:8081");
     }
 }

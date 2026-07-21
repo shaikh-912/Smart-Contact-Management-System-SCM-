@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,9 @@ public class userImpl implements userService {
     
     @Autowired
     private MailService mailService;
+
+    @Value("${app.base-url:http://localhost:8081}")
+    private String baseUrl;
      
     @Override
     public User saveUser(User user) {
@@ -44,7 +48,7 @@ public class userImpl implements userService {
         String emailToken=UUID.randomUUID().toString();
         user.setEmailToken(emailToken);
         User saveUser=userRepo.save(user);
-        String emailLink=Helper.getEmailVerificationLink(emailToken);
+        String emailLink=Helper.getEmailVerificationLink(emailToken, baseUrl);
         mailService.sendMail(saveUser.getEmail(), "Verify Email : SCM Contact Manager.", emailLink);
        return saveUser;
     }

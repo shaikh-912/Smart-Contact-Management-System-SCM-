@@ -83,7 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-const baseUrl="http://localhost:8081/user/contacts";
+const baseUrl="/user/contacts";
 
 //delete Contact
 async function deleteContact(id){

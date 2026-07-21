@@ -1,0 +1,49 @@
+services:
+  mysqldb:
+    image: mysql:8.0
+    container_name: mysqldb
+    restart: unless-stopped
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=12345
+      - MYSQL_DATABASE=scm
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - scm-network
+
+  springapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springapp
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_HOST=mysqldb
+      - DB_PORT=3306
+      - DB_NAME=scm
+      - DB_USER=root
+      - DB_PASS=12345
+      - PORT=8081
+      - APP_BASE_URL=http://localhost:8081
+    depends_on:
+      mysqldb:
+        condition: service_healthy
+    networks:
+      - scm-network
+
+volumes:
+  mysql_data:
+
+networks:
+  scm-network:
+    driver: bridge
