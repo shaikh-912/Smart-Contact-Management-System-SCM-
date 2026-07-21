@@ -32,8 +32,11 @@ public class Helper {
     	if (baseUrl == null || baseUrl.isBlank()) {
     		baseUrl = "http://localhost:8081";
     	}
-    	String link = baseUrl + "/auth/verify-email?token=" + emailToken;
-    	return link;
+    	baseUrl = baseUrl.trim();
+    	while (baseUrl.endsWith("/")) {
+    		baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+    	}
+    	return baseUrl + "/auth/verify-email?token=" + emailToken;
     }
 
     public static String getEmailVerificationLink(String emailToken) {
