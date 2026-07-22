@@ -3,7 +3,6 @@ package com.scm.project.services.serviceImplement;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,15 +53,13 @@ public class userImpl implements userService {
         logger.info("VERIFICATION LINK FOR {}: {}", saveUser.getEmail(), emailLink);
         logger.info("=================================================================");
 
-        // Execute mail sending asynchronously in background task thread so registration HTTP response is instant
-        CompletableFuture.runAsync(() -> {
-            try {
-                mailService.sendMail(saveUser.getEmail(), "Verify Email : SCM Contact Manager", emailLink);
-                logger.info("Verification mail dispatched to {}", saveUser.getEmail());
-            } catch (Exception e) {
-                logger.error("Async email dispatch failed for {}: {}", saveUser.getEmail(), e.getMessage());
-            }
-        });
+        // @Async on MailServiceImpl.sendMail handles async dispatch - no extra wrapping needed
+        try {
+            mailService.sendMail(saveUser.getEmail(), "Verify Email : SCM Contact Manager", emailLink);
+            logger.info("Verification mail dispatched to {}", saveUser.getEmail());
+        } catch (Exception e) {
+            logger.error("Email dispatch failed for {}: {}", saveUser.getEmail(), e.getMessage());
+        }
 
         return saveUser;
     }
