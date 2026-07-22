@@ -20,7 +20,7 @@ public class MailServiceImpl implements MailService {
 
 	private final JavaMailSender javaMailSender;
 
-	@Value("${spring.mail.username}")
+	@Value("${spring.mail.from:${spring.mail.username:}}")
 	private String fromEmail;
 
 	public MailServiceImpl(JavaMailSender javaMailSender) {

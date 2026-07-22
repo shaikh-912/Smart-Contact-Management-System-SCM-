@@ -191,11 +191,11 @@ cloudinary.cloud.name=YOUR_CLOUDINARY_CLOUD_NAME
 cloudinary.api.key=YOUR_CLOUDINARY_API_KEY
 cloudinary.api.secret=YOUR_CLOUDINARY_API_SECRET
 
-# Spring Mail (SMTP) setup
-spring.mail.host=smtp.gmail.com
+# Spring Mail (Brevo SMTP) setup
+spring.mail.host=smtp-relay.brevo.com
 spring.mail.port=587
-spring.mail.username=YOUR_EMAIL_USERNAME
-spring.mail.password=YOUR_EMAIL_APP_PASSWORD
+spring.mail.username=YOUR_BREVO_LOGIN_EMAIL
+spring.mail.password=YOUR_BREVO_SMTP_MASTER_KEY
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
 

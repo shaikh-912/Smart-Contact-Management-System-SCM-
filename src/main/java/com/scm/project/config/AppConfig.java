@@ -13,46 +13,44 @@ import com.cloudinary.utils.ObjectUtils;
 
 @Configuration
 public class AppConfig {
-	
+
 	@Value("${cloudinary.cloud.name}")
 	private String cloudName;
 	@Value("${cloudinary.api.key}")
 	private String apiKey;
 	@Value("${cloudinary.api.secret}")
 	private String apiSecret;
-	
-	@Value("${spring.mail.host:smtp.gmail.com}")
+
+	@Value("${spring.mail.host:smtp-relay.brevo.com}")
 	private String mailHost;
 
-	@Value("${spring.mail.port:465}")
+	@Value("${spring.mail.port:587}")
 	private int mailPort;
 
-	@Value("${spring.mail.username:}")
+	@Value("${spring.mail.username:b2ea35001@smtp-brevo.com}")
 	private String mailUsername;
 
-	@Value("${spring.mail.password:}")
+	@Value("${spring.mail.password:tXcdqfhVL6C0AYUW}")
 	private String mailPassword;
 
-	@Value("${spring.mail.protocol:smtps}")
+	@Value("${spring.mail.protocol:smtp}")
 	private String mailProtocol;
 
 	@Bean
 	public Cloudinary cloudinary() {
 		return new Cloudinary(
 				ObjectUtils.asMap(
-					"cloud_name",cloudName,
-					"api_key",apiKey,
-					"api_secret",apiSecret
-				)
-		);
+						"cloud_name", cloudName,
+						"api_key", apiKey,
+						"api_secret", apiSecret));
 	}
 
 	@Bean
 	public JavaMailSender javaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-		mailSender.setHost("smtp.gmail.com");
-		mailSender.setPort(465);
-		mailSender.setProtocol("smtps");
+		mailSender.setHost(mailHost);
+		mailSender.setPort(mailPort);
+		mailSender.setProtocol(mailProtocol);
 
 		if (mailUsername != null && !mailUsername.isBlank() && !mailUsername.startsWith("${")) {
 			mailSender.setUsername(mailUsername.trim());
@@ -62,14 +60,20 @@ public class AppConfig {
 		}
 
 		Properties props = mailSender.getJavaMailProperties();
-		props.put("mail.transport.protocol", "smtps");
+		props.put("mail.transport.protocol", mailProtocol);
 		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.ssl.enable", "true");
-		props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+		props.put("mail.smtp.ssl.trust", mailHost);
 		props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
-		props.put("mail.smtp.socketFactory.port", "465");
-		props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-		props.put("mail.smtp.socketFactory.fallback", "false");
+
+		if (mailPort == 465 || "smtps".equalsIgnoreCase(mailProtocol)) {
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.socketFactory.port", String.valueOf(mailPort));
+			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+			props.put("mail.smtp.socketFactory.fallback", "false");
+		} else {
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.starttls.required", "true");
+		}
 
 		// Timeouts to prevent SMTP hanging
 		props.put("mail.smtp.connectiontimeout", "10000");
@@ -79,4 +83,3 @@ public class AppConfig {
 		return mailSender;
 	}
 }
-
