@@ -50,12 +50,12 @@ public class AppConfig {
 	@Bean
 	public JavaMailSender javaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		// Force port 465 SSL if mailPort is 587 (Render env vars often set MAIL_PORT=587 which gets blocked)
+		int effectivePort = (mailPort == 587) ? 465 : mailPort;
 		mailSender.setHost(mailHost);
-		mailSender.setPort(mailPort);
+		mailSender.setPort(effectivePort);
 		
-		String proto = (mailProtocol != null && !mailProtocol.isBlank() && !mailProtocol.startsWith("${")) 
-				? mailProtocol 
-				: (mailPort == 465 ? "smtps" : "smtp");
+		String proto = (effectivePort == 465) ? "smtps" : "smtp";
 		mailSender.setProtocol(proto);
 
 		if (mailUsername != null && !mailUsername.isBlank() && !mailUsername.startsWith("${")) {
@@ -69,12 +69,12 @@ public class AppConfig {
 		props.put("mail.transport.protocol", proto);
 		props.put("mail.smtp.auth", "true");
 
-		if (mailPort == 465 || "smtps".equalsIgnoreCase(proto)) {
+		if (effectivePort == 465 || "smtps".equalsIgnoreCase(proto)) {
 			// SSL configuration for port 465 (Cloud / Render compatible)
 			props.put("mail.smtp.ssl.enable", "true");
 			props.put("mail.smtp.ssl.trust", mailHost);
 			props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
-			props.put("mail.smtp.socketFactory.port", String.valueOf(mailPort));
+			props.put("mail.smtp.socketFactory.port", String.valueOf(effectivePort));
 			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 			props.put("mail.smtp.socketFactory.fallback", "false");
 		} else {
