@@ -24,7 +24,7 @@ public class AppConfig {
 	@Value("${spring.mail.host:smtp.gmail.com}")
 	private String mailHost;
 
-	@Value("${spring.mail.port:587}")
+	@Value("${spring.mail.port:465}")
 	private int mailPort;
 
 	@Value("${spring.mail.username:}")
@@ -32,6 +32,9 @@ public class AppConfig {
 
 	@Value("${spring.mail.password:}")
 	private String mailPassword;
+
+	@Value("${spring.mail.protocol:smtps}")
+	private String mailProtocol;
 
 	@Bean
 	public Cloudinary cloudinary() {
@@ -49,21 +52,39 @@ public class AppConfig {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 		mailSender.setHost(mailHost);
 		mailSender.setPort(mailPort);
+		
+		String proto = (mailProtocol != null && !mailProtocol.isBlank() && !mailProtocol.startsWith("${")) 
+				? mailProtocol 
+				: (mailPort == 465 ? "smtps" : "smtp");
+		mailSender.setProtocol(proto);
 
-		if (mailUsername != null && !mailUsername.isBlank()) {
-			mailSender.setUsername(mailUsername);
+		if (mailUsername != null && !mailUsername.isBlank() && !mailUsername.startsWith("${")) {
+			mailSender.setUsername(mailUsername.trim());
 		}
-		if (mailPassword != null && !mailPassword.isBlank()) {
-			mailSender.setPassword(mailPassword);
+		if (mailPassword != null && !mailPassword.isBlank() && !mailPassword.startsWith("${")) {
+			mailSender.setPassword(mailPassword.trim());
 		}
 
 		Properties props = mailSender.getJavaMailProperties();
-		props.put("mail.transport.protocol", "smtp");
+		props.put("mail.transport.protocol", proto);
 		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-		props.put("mail.smtp.starttls.required", "true");
-		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-		props.put("mail.smtp.ssl.trust", mailHost);
+
+		if (mailPort == 465 || "smtps".equalsIgnoreCase(proto)) {
+			// SSL configuration for port 465 (Cloud / Render compatible)
+			props.put("mail.smtp.ssl.enable", "true");
+			props.put("mail.smtp.ssl.trust", mailHost);
+			props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
+			props.put("mail.smtp.socketFactory.port", String.valueOf(mailPort));
+			props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+			props.put("mail.smtp.socketFactory.fallback", "false");
+		} else {
+			// STARTTLS configuration for port 587
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.starttls.required", "true");
+			props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
+			props.put("mail.smtp.ssl.trust", mailHost);
+		}
+
 		// Timeouts to prevent SMTP from hanging indefinitely on Render/cloud networks
 		props.put("mail.smtp.connectiontimeout", "10000");
 		props.put("mail.smtp.timeout", "10000");
