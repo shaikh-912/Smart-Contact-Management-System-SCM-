@@ -134,7 +134,7 @@ d:/SpringProject/project/
 ## 📦 Architecture Details & Modules
 
 ### 1. Security & Authentication Layer
-* **Spring Security Config**: [SecurityConfig.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/config/SecurityConfig.java) defines custom route authorization. Paths matching `/user/**` are private and require authorization. All other routes are public.
+* **Spring Security Config**: [SecurityConfig.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/config/SecurityConfig.java) defines custom route authorization. Paths matching `/user/**` are private and require authorization. All other routes are public. Uses `server.forward-headers-strategy=FRAMEWORK` to respect proxy headers (`X-Forwarded-*`) from reverse proxies (e.g. Render, Railway) for correct OAuth2 redirect URIs.
 * **Form Authentication**: Utilizes standard database lookups. Email is set as the username parameter, and passwords are authenticated via [SecurityCustomUserDetailService.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/services/serviceImplement/SecurityCustomUserDetailService.java) utilizing BCrypt matching.
 * **Social OAuth2 Logins**: Google integration is configured. Upon successful authentication, a custom success handler reads attributes (email, name, picture), registers the user locally under `Provider.GOOGLE` if they are new, and redirects them to the private dashboard.
 * **Account Verification Flow**: New accounts are created as disabled. A custom failure handler [UserEnabledException.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/helper/UserEnabledException.java) redirects disabled users attempting to log in with an explanatory message. When the user visits the link in their mail, [EmailAuthController.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/controller/EmailAuthController.java) verifies the UUID email token and enables the user.
@@ -146,7 +146,7 @@ d:/SpringProject/project/
 
 ### 3. Business Service Layer
 * **User Management**: [userImpl.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/services/serviceImplement/userImpl.java) creates and saves accounts, encrypting raw passwords via standard Spring autowired decoders. It also generates a verification token, triggers mail sending, and saves users as disabled by default.
-* **Mail Service**: [MailServiceImpl.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/services/serviceImplement/MailServiceImpl.java) uses `SimpleMailMessage` and standard Java Mail dependencies to send registration verification links.
+* **Mail Service**: [MailServiceImpl.java](file:///d:/SpringProject/project/src/main/java/com/scm/project/services/serviceImplement/MailServiceImpl.java) uses `SimpleMailMessage` and standard Java Mail dependencies to send registration verification links. It explicitly sets the `From` address using the injected `spring.mail.username` property for compatibility with strict SMTP servers (like Gmail).
 * **Contact Operations**: [contactImpl.java](src/main/java/com/scm/project/services/serviceImplement/contactImpl.java) executes CRUD actions, formatting search outputs, mapping parameters, and handling paginated queries.
 * **Cloudinary Image Hosting**: [imageImpl.java](src/main/java/com/scm/project/services/serviceImplement/imageImpl.java) reads Multipart files, pushes binary arrays to Cloudinary API repositories, and requests server-side cropping (`fill` style) to enforce consistent user profiles.
 
@@ -198,6 +198,9 @@ spring.mail.username=YOUR_EMAIL_USERNAME
 spring.mail.password=YOUR_EMAIL_APP_PASSWORD
 spring.mail.properties.mail.smtp.auth=true
 spring.mail.properties.mail.smtp.starttls.enable=true
+
+# Reverse Proxy / SSL Termination Support (Required when deployed behind proxies e.g. Render, Railway)
+server.forward-headers-strategy=FRAMEWORK
 ```
 
 ### 🖥️ Run the Application
