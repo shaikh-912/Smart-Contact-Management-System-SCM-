@@ -69,16 +69,16 @@ public class ProjectController {
     }
 
     @PostMapping(value = "/do-signup")
-    public String doSignUP(@Valid @ModelAttribute UserForm userFrom, BindingResult rBindingResult, HttpSession session){
+    public String doSignUP(@Valid @ModelAttribute("userForm") UserForm userForm, BindingResult rBindingResult, HttpSession session){
         System.out.println("do Register....");
-        System.out.println(userFrom);
+        System.out.println(userForm);
 
         if(rBindingResult.hasErrors()){
             return "signup";
         }
 
         // Check if email is already registered
-        if(userService.isUserExistByEmail(userFrom.getEmail())){
+        if(userService.isUserExistByEmail(userForm.getEmail())){
             session.setAttribute("message", Message.builder()
                     .content("An account with this email already exists. Please login or use a different email.")
                     .type(MessageType.red).build());
@@ -86,11 +86,11 @@ public class ProjectController {
         }
 
         User user=new User();
-        user.setName(userFrom.getName());
-        user.setEmail(userFrom.getEmail());
-        user.setPassword(userFrom.getPassword());
-        user.setPhoneNumber(userFrom.getPhoneNumber());
-        user.setAbout(userFrom.getAbout());
+        user.setName(userForm.getName());
+        user.setEmail(userForm.getEmail());
+        user.setPassword(userForm.getPassword());
+        user.setPhoneNumber(userForm.getPhoneNumber());
+        user.setAbout(userForm.getAbout());
         user.setProfilePic("https://www.shutterstock.com/shutterstock/photos/2558760599/display_1500/stock-vector-user-profile-icon-vector-avatar-or-person-icon-profile-picture-portrait-symbol-default-avatar-2558760599.jpg");
         user.setEnable(false);
 
