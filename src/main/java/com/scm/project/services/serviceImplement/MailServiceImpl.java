@@ -34,9 +34,16 @@ public class MailServiceImpl implements MailService {
 			MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
 
-			if (fromEmail != null && !fromEmail.isBlank()) {
-				helper.setFrom(fromEmail);
+			String sender = (fromEmail != null && !fromEmail.isBlank() && !fromEmail.startsWith("${"))
+					? fromEmail.trim()
+					: "noreply@scm.com";
+
+			try {
+				helper.setFrom(sender, "SCM Contact Manager");
+			} catch (Exception ex) {
+				helper.setFrom(sender);
 			}
+
 			helper.setTo(to);
 			helper.setSubject(subject);
 

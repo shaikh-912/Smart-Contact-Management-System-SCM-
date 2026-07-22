@@ -50,12 +50,15 @@ public class userImpl implements userService {
         User saveUser=userRepo.save(user);
 
         String emailLink=Helper.getEmailVerificationLink(emailToken, baseUrl);
-        logger.info("Verification link for {}: {}", saveUser.getEmail(), emailLink);
+        logger.info("=================================================================");
+        logger.info("VERIFICATION LINK FOR {}: {}", saveUser.getEmail(), emailLink);
+        logger.info("=================================================================");
 
         // Execute mail sending asynchronously in background task thread so registration HTTP response is instant
         CompletableFuture.runAsync(() -> {
             try {
-                mailService.sendMail(saveUser.getEmail(), "Verify Email : SCM Contact Manager.", emailLink);
+                mailService.sendMail(saveUser.getEmail(), "Verify Email : SCM Contact Manager", emailLink);
+                logger.info("Verification mail dispatched to {}", saveUser.getEmail());
             } catch (Exception e) {
                 logger.error("Async email dispatch failed for {}: {}", saveUser.getEmail(), e.getMessage());
             }
