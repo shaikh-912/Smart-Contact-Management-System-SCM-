@@ -69,14 +69,21 @@ public class ProjectController {
     }
 
     @PostMapping(value = "/do-signup")
-    public String doSignUP(@Valid @ModelAttribute UserForm userFrom,BindingResult rBindingResult, HttpSession session){
+    public String doSignUP(@Valid @ModelAttribute UserForm userFrom, BindingResult rBindingResult, HttpSession session){
         System.out.println("do Register....");
         System.out.println(userFrom);
 
         if(rBindingResult.hasErrors()){
             return "signup";
         }
-        //userform --> data --> user
+
+        // Check if email is already registered
+        if(userService.isUserExistByEmail(userFrom.getEmail())){
+            session.setAttribute("message", Message.builder()
+                    .content("An account with this email already exists. Please login or use a different email.")
+                    .type(MessageType.red).build());
+            return "redirect:/signup";
+        }
 
         User user=new User();
         user.setName(userFrom.getName());
@@ -86,14 +93,22 @@ public class ProjectController {
         user.setAbout(userFrom.getAbout());
         user.setProfilePic("https://www.shutterstock.com/shutterstock/photos/2558760599/display_1500/stock-vector-user-profile-icon-vector-avatar-or-person-icon-profile-picture-portrait-symbol-default-avatar-2558760599.jpg");
         user.setEnable(false);
-        //save user
-        User saveUser=userService.saveUser(user);
-        System.out.println("saved Successfull");
 
-       Message message= Message.builder()
-               .content("Registration successful! Email verification link has been sent to your email, please check.")
-               .type(MessageType.green).build();
-        session.setAttribute("message", message);
+        try {
+            // saveUser encodes password, generates token, saves to DB, and sends verification email
+            userService.saveUser(user);
+            System.out.println("Saved & email sent for: " + user.getEmail());
+            session.setAttribute("message", Message.builder()
+                    .content("Registration successful! A verification link has been sent to " + user.getEmail() + ". Please check your inbox (and spam folder).")
+                    .type(MessageType.green).build());
+        } catch (RuntimeException e) {
+            System.out.println("Registration email failed: " + e.getMessage());
+            session.setAttribute("message", Message.builder()
+                    .content("Account created but we could not send a verification email to " + user.getEmail()
+                            + ". Please contact support or try registering again.")
+                    .type(MessageType.red).build());
+        }
+
         return "redirect:/login";
     }
 

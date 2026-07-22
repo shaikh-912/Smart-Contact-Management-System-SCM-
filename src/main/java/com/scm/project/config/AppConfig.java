@@ -64,6 +64,10 @@ public class AppConfig {
 		props.put("mail.smtp.starttls.required", "true");
 		props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 		props.put("mail.smtp.ssl.trust", mailHost);
+		// Timeouts to prevent SMTP from hanging indefinitely on Render/cloud networks
+		props.put("mail.smtp.connectiontimeout", "10000");
+		props.put("mail.smtp.timeout", "10000");
+		props.put("mail.smtp.writetimeout", "10000");
 
 		return mailSender;
 	}

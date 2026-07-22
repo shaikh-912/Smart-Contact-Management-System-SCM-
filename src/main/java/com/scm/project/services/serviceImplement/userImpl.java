@@ -44,13 +44,17 @@ public class userImpl implements userService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoleList(List.of(AppConstants.ROLE_USER));
         
-        
         String emailToken=UUID.randomUUID().toString();
         user.setEmailToken(emailToken);
         User saveUser=userRepo.save(user);
+
         String emailLink=Helper.getEmailVerificationLink(emailToken, baseUrl);
+        logger.info("Verification link for {}: {}", saveUser.getEmail(), emailLink);
+
+        // sendMail is @Async — fires in background, won't block registration response
         mailService.sendMail(saveUser.getEmail(), "Verify Email : SCM Contact Manager.", emailLink);
-       return saveUser;
+
+        return saveUser;
     }
 
     @Override
