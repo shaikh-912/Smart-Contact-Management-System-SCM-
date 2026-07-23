@@ -79,15 +79,7 @@ public class SecurityConfig {
         });
 
         httpSecurity.authenticationProvider(authenticationProvider());
-        httpSecurity.formLogin(formlogin->{
-            formlogin.loginPage("/login");
-            formlogin.loginProcessingUrl("/authenticate");
-            formlogin.defaultSuccessUrl("/user/dashboard", true);
-            formlogin.failureUrl("/login?error=true");
-            formlogin.usernameParameter("email");
-            formlogin.passwordParameter("password");
-            formlogin.failureHandler(userEnabledException);
-        });
+
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.logout(logout->{

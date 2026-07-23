@@ -4,19 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.scm.project.Entity.User;
 import com.scm.project.helper.AppConstants;
-import com.scm.project.helper.Helper;
 import com.scm.project.helper.ResourceNotFound;
 import com.scm.project.repository.UserRepo;
-import com.scm.project.services.MailService;
 import com.scm.project.services.userService;
 
 @Service
@@ -25,43 +20,21 @@ public class userImpl implements userService {
     @Autowired
     private UserRepo userRepo;
 
-    private Logger logger=LoggerFactory.getLogger(this.getClass());
-
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
-    @Autowired
-    private MailService mailService;
 
-    @Value("${app.base-url:http://localhost:8081}")
-    private String baseUrl;
-     
     @Override
     public User saveUser(User user) {
         //generate userId
         String uId=UUID.randomUUID().toString();
         user.setId(uId);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoleList(List.of(AppConstants.ROLE_USER));
-        
-        String emailToken=UUID.randomUUID().toString();
-        user.setEmailToken(emailToken);
-        User saveUser=userRepo.save(user);
-
-        String emailLink=Helper.getEmailVerificationLink(emailToken, baseUrl);
-        logger.info("=================================================================");
-        logger.info("VERIFICATION LINK FOR {}: {}", saveUser.getEmail(), emailLink);
-        logger.info("=================================================================");
-
-        // @Async on MailServiceImpl.sendMail handles async dispatch - no extra wrapping needed
-        try {
-            mailService.sendMail(saveUser.getEmail(), "Verify Email : SCM Contact Manager", emailLink);
-            logger.info("Verification mail dispatched to {}", saveUser.getEmail());
-        } catch (Exception e) {
-            logger.error("Email dispatch failed for {}: {}", saveUser.getEmail(), e.getMessage());
+        if (user.getPassword() != null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-
-        return saveUser;
+        user.setRoleList(List.of(AppConstants.ROLE_USER));
+        user.setEnable(true);
+        user.setEmailVarified(true);
+        return userRepo.save(user);
     }
 
     @Override
