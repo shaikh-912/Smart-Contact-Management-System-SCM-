@@ -207,6 +207,14 @@ public class contactController {
 
 		// Only upload a new image if the user chose a file
 		if (contactForm.getContactImage() != null && !contactForm.getContactImage().isEmpty()) {
+
+			// Delete the old image from Cloudinary first (if one exists)
+			String oldPublicId = existingContact.getContactPublicId();
+			if (oldPublicId != null && !oldPublicId.isBlank()) {
+				imageService.deleteImage(oldPublicId);
+			}
+
+			// Upload the new image with a fresh public ID
 			String newPublicId = UUID.randomUUID().toString();
 			String newUrl = imageService.uploadImage(contactForm.getContactImage(), newPublicId);
 			if (newUrl != null && !newUrl.isEmpty()) {
