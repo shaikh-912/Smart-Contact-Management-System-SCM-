@@ -129,7 +129,7 @@ public class contactController {
 			) {
 		
 		//get logged in user email
-		String email=authentication.getName();
+		String email = Helper.getEmailOfLoggedUser(authentication);
 		User user=userService.findByEmail(email);
 		Page<Contact> pageContacts=null;
 	

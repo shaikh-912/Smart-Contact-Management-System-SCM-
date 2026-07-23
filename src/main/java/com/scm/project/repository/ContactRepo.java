@@ -23,7 +23,7 @@ public interface ContactRepo extends JpaRepository<Contact	, String> {
 	long countByUserAndFavorite(User user, boolean favorite);
 	
 	//custom query method
-	@Query("select c from Contact c where c.user.Id =: userid")
+	@Query("select c from Contact c where c.user.Id = :userid")
 	List<Contact> findByUserId(@Param("userid") String userid);
 	
 	//search query
