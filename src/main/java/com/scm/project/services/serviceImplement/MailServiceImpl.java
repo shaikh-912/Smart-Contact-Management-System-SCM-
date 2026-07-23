@@ -19,6 +19,7 @@ public class MailServiceImpl implements MailService {
     private JavaMailSender mailSender;
 
     @Override
+    @org.springframework.scheduling.annotation.Async
     public void sendEmail(String to, String subject, String body) {
         if (mailSender == null) {
             logger.error("JavaMailSender is not configured. Cannot send email to {}", to);
