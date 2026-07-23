@@ -5,8 +5,6 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,12 +54,13 @@ public class contactController {
 		return "user/add_contact";
 	}
 	@RequestMapping(value = "/add",method=RequestMethod.POST)
-	public String  saveContact(@ModelAttribute ContactForm contactForm,@AuthenticationPrincipal UserDetails current,
+	public String saveContact(@ModelAttribute ContactForm contactForm,
+								Authentication authentication,
 								HttpSession session) {
 		
 		//fetch user
-		String useremail=current.getUsername();
-		User user=userService.findByEmail(useremail);
+		String useremail = Helper.getEmailOfLoggedUser(authentication);
+		User user = userService.findByEmail(useremail);
 		
 		//process image 
 		String filename=UUID.randomUUID().toString();
@@ -192,7 +191,7 @@ public class contactController {
 	public String updateContact(
 			@PathVariable String id,
 			@ModelAttribute ContactForm contactForm,
-			@AuthenticationPrincipal UserDetails current,
+			Authentication authentication,
 			HttpSession session) {
 
 		Contact existingContact = contactService.getById(id);
